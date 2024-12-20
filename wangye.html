@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bei Jiao Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .content {
+            flex: 3;
+            margin-right: 20px;
+        }
+        .summary {
+            flex: 1;
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        img {
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Bei Jiao Simulator</h1>
+        <p>Enter the number of times you want to flip two beijiaos:</p>
+        <input type="number" id="flipCount" min="1" placeholder="Enter a number">
+        <button onclick="simulateFlips()">Flip</button>
+
+        <h2>Results:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Flip Number</th>
+                    <th>BeiJiao1</th>
+                    <th>BeiJiao2</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable">
+                <!-- Results will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary">
+        <h3>Summary:</h3>
+        <p id="summaryRow"></p>
+    </div>
+
+    <script>
+        // 更新为本地图片路径
+        const coinImages = {
+            'Heads': 'https://oax.wzznft.com/i/2024/12/20/sijyni.png', // 正面图片
+            'Tails': 'https://oax.wzznft.com/i/2024/12/20/sijy78.png'  // 反面图片
+        };
+
+        // 模拟硬币抛掷
+        function simulateFlips() {
+            const flipCount = document.getElementById('flipCount').value;
+            const resultsTable = document.getElementById('resultsTable');
+            resultsTable.innerHTML = ''; // 清空表格
+
+            let oneHeadOneTailCount = 0;
+            let twoHeadsCount = 0;
+            let twoTailsCount = 0;
+
+            for (let i = 1; i <= flipCount; i++) {
+                let coin1, coin2;
+
+                // 调整概率逻辑
+                const random = Math.random();
+                if (random < 0.63) { // 63% 概率是一正一反
+                    coin1 = Math.random() < 0.5 ? 'Heads' : 'Tails';
+                    coin2 = coin1 === 'Heads' ? 'Tails' : 'Heads';
+                } else if (random < 0.815) { // 18.5% 概率为两正
+                    coin1 = 'Heads';
+                    coin2 = 'Heads';
+                } else { // 18.5% 概率为两反
+                    coin1 = 'Tails';
+                    coin2 = 'Tails';
+                }
+
+                // 统计结果
+                if (coin1 !== coin2) {
+                    oneHeadOneTailCount++;
+                } else if (coin1 === 'Heads' && coin2 === 'Heads') {
+                    twoHeadsCount++;
+                } else {
+                    twoTailsCount++;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td><img src="${coinImages[coin1]}" alt="${coin1}"></td>
+                    <td><img src="${coinImages[coin2]}" alt="${coin2}"></td>
+                `;
+                resultsTable.appendChild(row);
+            }
+
+            // 更新统计结果
+            const summaryRow = document.getElementById('summaryRow');
+            summaryRow.innerHTML = `
+                One Head One Tail: ${oneHeadOneTailCount}<br>
+                Two Heads: ${twoHeadsCount}<br>
+                Two Tails: ${twoTailsCount}
+            `;
+        }
+    </script>
+</body>
+</html>
